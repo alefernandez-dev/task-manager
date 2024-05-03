@@ -1,6 +1,7 @@
 package dev.alejandro.taskmanager.task.domain;
 
 import dev.alejandro.taskmanager.common.domain.Identifier;
+import dev.alejandro.taskmanager.user.domain.User;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ public record Task(
         Identifier taskId,
         TaskName taskName,
         TaskDescription taskDescription,
-        Set<Identifier> employeesId,
+        Set<TaskEmployee> employees,
         TaskLifecycle taskLifecycle,
         TaskStatus taskStatus
         ) {
@@ -24,25 +25,25 @@ public record Task(
     public static Task of(
             TaskName taskName,
             TaskDescription taskDescription,
-            Set<Identifier> employeesId,
+            Set<TaskEmployee> employees,
             TaskLifecycle taskLifecycle) {
-        return new Task(Identifier.generate(), taskName, taskDescription, employeesId, taskLifecycle, TaskStatus.of(TaskStatus.Status.NOT_STARTED));
+        return new Task(Identifier.generate(), taskName, taskDescription, employees, taskLifecycle, TaskStatus.of(TaskStatus.Status.NOT_STARTED));
     }
 
     public Task update(TaskName taskName, TaskDescription taskDescription) {
-        return new Task(taskId, taskName, taskDescription, employeesId, taskLifecycle, taskStatus);
+        return new Task(taskId, taskName, taskDescription, employees, taskLifecycle, taskStatus);
     }
 
-    public Task addEmployee(Identifier employeeId) {
-        var updatedTechniciansId = new HashSet<>(employeesId);
-        updatedTechniciansId.add(employeeId);
-        return new Task(taskId, taskName, taskDescription, updatedTechniciansId, taskLifecycle, taskStatus);
+    public Task addEmployee(TaskEmployee employee) {
+        var updatedEmployess = new HashSet<>(employees);
+        updatedEmployess.add(employee);
+        return new Task(taskId, taskName, taskDescription, updatedEmployess, taskLifecycle, taskStatus);
     }
 
-    public Task removeEmployee(Identifier employeeId) {
-        var updatedTechniciansId = new HashSet<>(employeesId);
-        updatedTechniciansId.remove(employeeId);
-        return new Task(taskId, taskName, taskDescription, updatedTechniciansId, taskLifecycle, taskStatus);
+    public Task removeEmployee(TaskEmployee employee) {
+        var updatedEmployees = new HashSet<>(employees);
+        updatedEmployees.remove(employee);
+        return new Task(taskId, taskName, taskDescription, updatedEmployees, taskLifecycle, taskStatus);
     }
 
     public Duration timeRemainingUntilDue() {
@@ -50,7 +51,7 @@ public record Task(
     }
 
     public Task changeStatus(TaskStatus status) {
-        return new Task(taskId, taskName, taskDescription, employeesId, taskLifecycle.completeTask(), status);
+        return new Task(taskId, taskName, taskDescription, employees, taskLifecycle.completeTask(), status);
 
     }
 
@@ -58,7 +59,7 @@ public record Task(
         Objects.requireNonNull(taskId, "taskId is null");
         Objects.requireNonNull(taskName, "taskName is null");
         Objects.requireNonNull(taskDescription, "taskDescription is null");
-        Objects.requireNonNull(employeesId, "employeesId is null");
+        Objects.requireNonNull(employees, "employees is null");
         Objects.requireNonNull(taskLifecycle, "taskLifecycle is null");
         Objects.requireNonNull(taskStatus, "taskStatus is null");
     }

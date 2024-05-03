@@ -6,10 +6,10 @@ import dev.alejandro.taskmanager.task.domain.*;
 import java.util.UUID;
 
 public class UpdateTaskUseCase {
+/*
+    private final Tasks taskRepository;
 
-    private final TaskRepository taskRepository;
-
-    public UpdateTaskUseCase(TaskRepository taskRepository) {
+    public UpdateTaskUseCase(Tasks taskRepository) {
         this.taskRepository = taskRepository;
     }
 
@@ -42,5 +42,5 @@ public class UpdateTaskUseCase {
                 .findById(taskId)
                 .orElseThrow(TaskNotFoundException::new);
     }
-
+*/
 }

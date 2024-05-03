@@ -4,20 +4,22 @@ import dev.alejandro.taskmanager.user.application.CreateUserUseCase;
 import dev.alejandro.taskmanager.user.application.DeleteUserByIdUseCase;
 import dev.alejandro.taskmanager.user.application.RetrieveUsersUseCase;
 import dev.alejandro.taskmanager.user.application.UpdateUserUseCase;
+import dev.alejandro.taskmanager.user.domain.AvailableEmployeeFilter;
+import dev.alejandro.taskmanager.user.domain.EmployeeBusyMarker;
 import dev.alejandro.taskmanager.user.domain.PasswordEncryptor;
-import dev.alejandro.taskmanager.user.domain.UserRepository;
+import dev.alejandro.taskmanager.user.domain.Users;
 import dev.alejandro.taskmanager.user.infrastructure.adapter.PasswordStrongTextEncryptorAdapter;
-import dev.alejandro.taskmanager.user.infrastructure.adapter.repository.UserH2Repository;
+import dev.alejandro.taskmanager.user.infrastructure.adapter.repository.UsersAdapter;
+import dev.alejandro.taskmanager.user.infrastructure.adapter.repository.jpa.UsersJpa;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.simple.JdbcClient;
 
 @Configuration
 public class UserBeanConfiguration {
 
     @Bean
-    UserRepository userRepository(JdbcClient jdbcClient) {
-        return new UserH2Repository(jdbcClient);
+    Users users(UsersJpa usersJpa) {
+        return new UsersAdapter(usersJpa);
     }
 
     @Bean
@@ -31,23 +33,33 @@ public class UserBeanConfiguration {
     }
 
     @Bean
-    CreateUserUseCase createUserUseCase(UserRepository repository, PasswordEncryptor passwordEncryptor) {
+    CreateUserUseCase createUserUseCase(Users repository, PasswordEncryptor passwordEncryptor) {
         return new CreateUserUseCase(repository, passwordEncryptor);
     }
 
     @Bean
-    DeleteUserByIdUseCase deleteUserByIdUseCase(UserRepository repository) {
+    DeleteUserByIdUseCase deleteUserByIdUseCase(Users repository) {
         return new DeleteUserByIdUseCase(repository);
     }
 
     @Bean
-    RetrieveUsersUseCase retrieveUsersUseCase(UserRepository repository) {
+    RetrieveUsersUseCase retrieveUsersUseCase(Users repository) {
         return new RetrieveUsersUseCase(repository);
     }
 
     @Bean
-    UpdateUserUseCase updateUserUseCase(UserRepository repository) {
+    UpdateUserUseCase updateUserUseCase(Users repository) {
         return new UpdateUserUseCase(repository);
+    }
+
+    @Bean
+    AvailableEmployeeFilter availableEmployeeFilter(Users repository) {
+        return new AvailableEmployeeFilter(repository);
+    }
+
+    @Bean
+    EmployeeBusyMarker employeeBusyMarker(Users repository) {
+        return new EmployeeBusyMarker(repository);
     }
 
 }

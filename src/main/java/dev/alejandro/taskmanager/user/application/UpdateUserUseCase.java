@@ -3,37 +3,37 @@ package dev.alejandro.taskmanager.user.application;
 import dev.alejandro.taskmanager.common.domain.Identifier;
 import dev.alejandro.taskmanager.user.domain.UserName;
 import dev.alejandro.taskmanager.user.domain.Password;
-import dev.alejandro.taskmanager.user.domain.UserRepository;
+import dev.alejandro.taskmanager.user.domain.Users;
 import dev.alejandro.taskmanager.user.domain.UserRole;
 
 public class UpdateUserUseCase {
 
-    private final UserRepository userRepository;
+    private final Users repository;
 
-    public UpdateUserUseCase(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UpdateUserUseCase(Users userRepository) {
+        this.repository = userRepository;
     }
 
     public void update(UserInput userInput, String userId) {
         var username = UserName.of(userInput.username());
         var id = Identifier.fromString(userId);
-        if(userRepository.existByUsernameAndNotId(username, id)) {
+        if(repository.existsByUsernameAndNotId(username, id)) {
             throw new UsernameAlreadyExistsError();
         }
 
-        var userUpdated = userRepository
+        var userUpdated = repository
                 .findById(id)
                 .orElseThrow(UserNotFoundException::new)
                 .update(username, Password.of(userInput.password()));
 
-        userRepository.update(userUpdated);
+        repository.update(userUpdated);
     }
 
     public void changeRole(String role, String userId) {
-        var userUpdated = userRepository
+        var userUpdated = repository
                 .findById(Identifier.fromString(userId))
                 .orElseThrow(UserNotFoundException::new)
                 .changeRole(UserRole.fromString(role));
-        userRepository.update(userUpdated);
+        repository.update(userUpdated);
     }
 }

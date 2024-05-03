@@ -4,18 +4,18 @@ import dev.alejandro.taskmanager.user.domain.*;
 
 public class CreateUserUseCase {
 
-    private final UserRepository userRepository;
+    private final Users repository;
     private final PasswordEncryptor passwordEncryptor;
 
-    public CreateUserUseCase(UserRepository userRepository, PasswordEncryptor passwordEncryptor) {
-        this.userRepository = userRepository;
+    public CreateUserUseCase(Users userRepository, PasswordEncryptor passwordEncryptor) {
+        this.repository = userRepository;
         this.passwordEncryptor = passwordEncryptor;
     }
 
     public void create(UserInput userInput) {
 
         var username = UserName.of(userInput.username());
-        if(userRepository.existByUsername(username)) {
+        if(repository.existsByUsername(username)) {
             throw new UsernameAlreadyExistsError();
         }
 
@@ -25,7 +25,7 @@ public class CreateUserUseCase {
                 Password.of(encryptedPassword),
                 UserRole.fromString(userInput.role())
         );
-        userRepository.persist(user);
+        repository.persist(user);
 
     }
 }

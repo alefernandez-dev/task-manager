@@ -20,7 +20,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler { // TODO: Error code
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 

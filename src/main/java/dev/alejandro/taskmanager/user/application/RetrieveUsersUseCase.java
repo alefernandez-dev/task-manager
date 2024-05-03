@@ -3,24 +3,24 @@ package dev.alejandro.taskmanager.user.application;
 import dev.alejandro.taskmanager.common.domain.Identifier;
 import dev.alejandro.taskmanager.user.domain.UserName;
 import dev.alejandro.taskmanager.user.domain.User;
-import dev.alejandro.taskmanager.user.domain.UserRepository;
+import dev.alejandro.taskmanager.user.domain.Users;
 
 import java.util.List;
 
 public class RetrieveUsersUseCase {
-    private final UserRepository userRepository;
+    private final Users repository;
 
-    public RetrieveUsersUseCase(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public RetrieveUsersUseCase(Users userRepository) {
+        this.repository = userRepository;
     }
 
     public UserOutput retrieveById(String userId) {
-        return userRepository.findById(Identifier.fromString(userId))
+        return repository.findById(Identifier.fromString(userId))
                 .map(this::toUserOutput)
                 .orElseThrow(UserNotFoundException::new);
     }
     public List<UserOutput> retrieveByName(String username) {
-        return userRepository
+        return repository
                 .findByUserName(UserName.of(username))
                 .stream()
                 .map(this::toUserOutput)
@@ -28,7 +28,7 @@ public class RetrieveUsersUseCase {
     }
 
     public List<UserOutput> retrieveAll() {
-        return userRepository
+        return repository
                 .findAll()
                 .stream()
                 .map(this::toUserOutput)

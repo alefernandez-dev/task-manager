@@ -4,7 +4,7 @@ public record UserRole(Role value) {
 
     public UserRole {
         if (value == null) {
-            throw new IllegalArgumentException("user role can not be null");
+            throw new InvalidUserRoleException();
         }
     }
 
@@ -23,5 +23,9 @@ public record UserRole(Role value) {
     public enum Role {
         ADMIN,
         EMPLOYEE
+    }
+
+    public String name() {
+        return value.name();
     }
 }

@@ -5,7 +5,7 @@ import dev.alejandro.taskmanager.common.domain.Identifier;
 import java.util.List;
 import java.util.Optional;
 
-public interface TaskRepository {
+public interface Tasks {
     void persist(Task task);
     boolean existsById(Identifier id);
     void deleteById(Identifier id);

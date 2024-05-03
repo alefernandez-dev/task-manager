@@ -28,4 +28,8 @@ public record TaskStatus(Status value) {
         FINISHED,
         COMPLETED
     }
+
+    public String name() {
+        return value.name();
+    }
 }

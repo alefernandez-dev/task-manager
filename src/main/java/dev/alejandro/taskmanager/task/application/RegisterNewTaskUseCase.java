@@ -2,44 +2,62 @@ package dev.alejandro.taskmanager.task.application;
 
 import dev.alejandro.taskmanager.common.domain.Identifier;
 import dev.alejandro.taskmanager.task.domain.*;
-import dev.alejandro.taskmanager.user.domain.UserRepository;
+import dev.alejandro.taskmanager.user.domain.*;
 
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class RegisterNewTaskUseCase {
-    private final TaskRepository taskRepository;
-    private final UserRepository userRepository;
 
-    public RegisterNewTaskUseCase(TaskRepository taskRepository, UserRepository userRepository) {
+    private final Tasks taskRepository;
+    private final AvailableEmployeeFilter filter;
+    private final EmployeeBusyMarker busyMarker;
+
+    public RegisterNewTaskUseCase(Tasks taskRepository, AvailableEmployeeFilter filter, EmployeeBusyMarker busyMarker) {
         this.taskRepository = taskRepository;
-        this.userRepository = userRepository;
+        this.filter = filter;
+        this.busyMarker = busyMarker;
     }
 
     public void create(TaskInput taskInput) {
 
-        var employees = verifyEmployeesNotBusy(taskInput.employeesId());
+        var employeesId = getEmployeeIdentifier(taskInput);
 
-        if (employees.isEmpty()) {
-            throw new EmployeesForTaskNotFoundException();
-        }
+        var employees = getEmployeesAvailable(employeesId);
 
-        var task = Task.of(
-          TaskName.of(taskInput.taskName()),
-          TaskDescription.of(taskInput.taskDescription()),
-          employees,
-          TaskLifecycle.of(taskInput.dueDate())
-        );
+        var task = createTask(taskInput, employees);
+
+        busyMarker.markBusy(employeesId);
 
         taskRepository.persist(task);
     }
 
-    private Set<Identifier> verifyEmployeesNotBusy(Set<UUID> employeesId) {
-        return employeesId
+    private Set<TaskEmployee> toTaskEmployees(Set<User> users){
+        return users
                 .stream()
-                .map(Identifier::new)
-                .filter(userRepository::isEmployeeNotBusy)
+                .map(e -> new TaskEmployee(e.id().value(), e.username().value()))
                 .collect(Collectors.toSet());
+    }
+
+    private Set<Identifier> getEmployeeIdentifier(TaskInput taskInput) {
+        return taskInput.employeesId().stream().map(Identifier::new).collect(Collectors.toSet());
+    }
+
+    private Task createTask(TaskInput taskInput, Set<User> employees) {
+        return Task.of(
+                TaskName.of(taskInput.taskName()),
+                TaskDescription.of(taskInput.taskDescription()),
+                toTaskEmployees(employees),
+                TaskLifecycle.of(taskInput.dueDate())
+        );
+    }
+
+    private Set<User> getEmployeesAvailable(Set<Identifier> ids) {
+        var employees = filter.filterAvailable(ids);
+        if (employees.isEmpty()) {
+            throw new EmployeesForTaskNotFoundException();
+        }
+        return employees;
     }
 }

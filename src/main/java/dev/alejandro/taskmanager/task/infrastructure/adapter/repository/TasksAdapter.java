@@ -2,15 +2,22 @@ package dev.alejandro.taskmanager.task.infrastructure.adapter.repository;
 
 import dev.alejandro.taskmanager.common.domain.Identifier;
 import dev.alejandro.taskmanager.task.domain.Task;
-import dev.alejandro.taskmanager.task.domain.TaskRepository;
+import dev.alejandro.taskmanager.task.domain.Tasks;
+import dev.alejandro.taskmanager.task.infrastructure.adapter.repository.jpa.TasksJpa;
 
 import java.util.List;
 import java.util.Optional;
 
-public class TaskH2Repository implements TaskRepository {
+public class TasksAdapter implements Tasks {
+
+    private final TasksJpa repository;
+
+    public TasksAdapter(TasksJpa repository) {
+        this.repository = repository;
+    }
+
     @Override
     public void persist(Task task) {
-
     }
 
     @Override

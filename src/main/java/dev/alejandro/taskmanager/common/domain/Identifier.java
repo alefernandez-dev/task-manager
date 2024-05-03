@@ -25,5 +25,4 @@ public record Identifier(UUID value) {
     public static Identifier generate() {
         return new Identifier(UUID.randomUUID());
     }
-
 }

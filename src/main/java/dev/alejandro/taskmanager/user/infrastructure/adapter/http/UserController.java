@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponse>> retrieve(@RequestParam(required = false) String username) {
+    public ResponseEntity<List<UserResponse>> list(@RequestParam(required = false) String username) {
         List<UserResponse> users = new ArrayList<>();
         if (username != null) {
             users = retrieveUsersUseCase
@@ -52,7 +52,7 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> retrieveById(@PathVariable(name = "id") String userId) {
+    public ResponseEntity<UserResponse> findById(@PathVariable(name = "id") String userId) {
         var userOutput = retrieveUsersUseCase.retrieveById(userId);
         return ResponseEntity.ok(this.toResponse(userOutput));
     }
